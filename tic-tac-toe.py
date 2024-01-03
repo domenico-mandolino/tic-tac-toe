@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from ia import ia
 from score_manager import ScoreManager
+import random
 
 class TicTacToe:
     def __init__(self, master):
@@ -19,6 +20,10 @@ class TicTacToe:
         for i, button in enumerate(self.buttons):
             row, col = divmod(i, 3)
             button.grid(row=row, column=col)
+
+        # Si l'IA commence, appeler la fonction pour son tour
+        if self.current_player == "O":
+            self.ia_move()
 
     def make_move(self, index):
         if self.board[index] == 0:
@@ -40,10 +45,10 @@ class TicTacToe:
                     self.ia_move()
 
     def ia_move(self):
-        # Appeler la fonction de l'IA pour obtenir le meilleur mouvement
-        move = ia(self.board, "O")
-        if move is not False:
-            self.make_move(move)
+            # Appeler la fonction de l'IA avec profondeur de recherche et variabilité
+            move = ia(self.board, "O", depth=3, variability=0.2)
+            if move is not False:
+                self.make_move(move)
 
     def check_winner(self):
         # Check rows, columns, and diagonals for a winner

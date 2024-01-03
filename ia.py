@@ -1,12 +1,16 @@
 # ia.py
 
-def ia(board, signe):
+import random
+
+def ia(board, signe, depth=3, variability=0.2):
     """
     Fonction d'intelligence artificielle utilisant l'algorithme minimax pour le Tic Tac Toe.
 
     Parameters:
     - board (list): Liste représentant l'état actuel du plateau de jeu.
     - signe (str): Le signe de l'IA ("X" ou "O").
+    - depth (int): Profondeur de l'algorithme Minimax.
+    - variability (float): Niveau de variabilité pour des mouvements moins optimaux.
 
     Returns:
     - best_move (int): La meilleure position pour le prochain mouvement de l'IA, de 0 à 8.
@@ -40,8 +44,8 @@ def ia(board, signe):
     def minimax(depth, maximizing_player):
         score = evaluate()
 
-        # Si la partie est terminée, retourner le score
-        if score != 0:
+        # Si la partie est terminée ou la profondeur maximale atteinte, retourner le score
+        if score != 0 or depth == 0:
             return score
 
         # Si le jeu est un match nul, retourner 0
@@ -54,7 +58,7 @@ def ia(board, signe):
             for i in range(9):
                 if board[i] == 0:
                     board[i] = signe
-                    eval = minimax(depth + 1, False)
+                    eval = minimax(depth - 1, False)
                     board[i] = 0  # Annuler le mouvement
                     max_eval = max(max_eval, eval)
             return max_eval
@@ -63,25 +67,31 @@ def ia(board, signe):
             for i in range(9):
                 if board[i] == 0:
                     board[i] = adversaire
-                    eval = minimax(depth + 1, True)
+                    eval = minimax(depth - 1, True)
                     board[i] = 0  # Annuler le mouvement
                     min_eval = min(min_eval, eval)
             return min_eval
 
     # Initialiser les valeurs pour choisir le meilleur mouvement
     best_eval = float("-inf")
-    best_move = -1
+    best_moves = []
 
     # Trouver le meilleur mouvement en parcourant toutes les positions possibles
     for i in range(9):
         if board[i] == 0:
             board[i] = signe
-            move_eval = minimax(0, False)
+            move_eval = minimax(depth, False)
             board[i] = 0  # Annuler le mouvement
 
-            # Mettre à jour le meilleur mouvement si nécessaire
+            # Mettre à jour les meilleurs mouvements si nécessaire
             if move_eval > best_eval:
                 best_eval = move_eval
-                best_move = i
+                best_moves = [i]
+            elif move_eval == best_eval:
+                best_moves.append(i)
 
-    return best_move
+    # Introduire de la variabilité dans le choix du mouvement
+    if random.random() < variability and best_moves:
+        return random.choice(best_moves)
+    else:
+        return best_moves[0] if best_moves else -1
